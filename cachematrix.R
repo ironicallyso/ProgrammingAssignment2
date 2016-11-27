@@ -1,15 +1,30 @@
-## Put comments here that give an overall description of what your
-## functions do
+## These functions are used to optimize the performance of otherwise "expensive" inverse matrix computations
 
-## Write a short comment describing this function
+## makeCacheMatrix assigns functions to set and retrieve the inverse of a square matrix to an object in the Global Environment that can later be called by cacheSolve
 
 makeCacheMatrix <- function(x = matrix()) {
-
+	i <- NULL
+	set <- function(y) {
+		x <<- y
+		i <<- NULL
+	}
+	get <- function() x
+	setinverse <- function(solve) i <<- solve
+	getinverse <- function() i
+	list(set = set, get = get, setinverse = setinverse, getinverse = getinverse)
 }
 
 
-## Write a short comment describing this function
+## cacheSolve retrieves cached inverse matrices that have already been solved OR computes and puts into the cache matrices that have not yet been solved
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+	i <- x$getinverse()
+	if(!is.null(i)) {
+		message("getting cached inverse matrix")
+		return(i)
+	}
+	data <- x$get()
+	i <- solve(data, ...)
+	x$setinverse(i)
+	i
 }
